@@ -1,8 +1,8 @@
 "use client";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 const products = [
-  {
+    {
     name: "Organic Tomato",
     price: "₹50 / kg",
     image:
@@ -153,7 +153,7 @@ const products = [
     name: "Swiss Chard",
     price: "₹35 / kg",
     image:
-      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrqdRphaHqAp7ftvFTwL2ojAUVjEI8JwgcWw&s",
+      "https://t3.ftcdn.net/jpg/00/39/08/56/360_F_39085638_ilQPwhP8PfCJFNqviC9Tg7mzLmYr5ABe.jpg",
     description: "Colorful swiss chard leaves, full of vitamins.",
   },
   {
@@ -210,8 +210,8 @@ const products = [
     price: "₹200 / kg",
     image:
       "https://rimage.gnst.jp/livejapan.com/public/article/detail/a/00/02/a0002345/img/en/a0002345_parts_5b28b61eb6f1d.jpg?20210210160549&q=80&rw=686&rh=490",
-      description: "Wasabi is a Japanese condiment used with sush.",
-  },
+     description: "Wasabi is best food fro eating , very healthy",
+    },
   {
     name: "Jicama",
     price: "₹50 / kg",
@@ -232,8 +232,54 @@ const products = [
     image: "https://foodcare.in/cdn/shop/files/PUMPKIN.jpg?v=1725364590",
     description: "Fresh pumpkin, ideal for soups and baking.",
   },
-  
-  // You can add more if needed
+    {
+    name: "Full Cream Milk",
+    price: "₹60 / liter",
+    image: "https://www.shutterstock.com/image-photo/banner-glass-milk-jug-on-260nw-1739574104.jpg",
+    description: "Rich and creamy full cream milk, fresh from local farms.",
+  },
+  {
+    name: "Paneer (Cottage Cheese)",
+    price: "₹250 / kg",
+    image: "https://media.istockphoto.com/id/1183707972/photo/paneer-cottage-cheese-close-up.jpg?s=612x612&w=0&k=20&c=PX2_y5j0KJUURf2qZuWMrxmZ5wtbci076zEg_1w8KiI=",
+    description: "Soft and fresh paneer, perfect for cooking and salads.",
+  },
+  {
+    name: "Butter",
+    price: "₹300 / kg",
+    image: "https://t3.ftcdn.net/jpg/02/10/30/54/360_F_210305493_vSBsVrBRyJvLBR5JLKmISAEy3xjfcERN.jpg",
+    description: "Creamy butter made from pure milk, great for baking and cooking.",
+  },
+  {
+    name: "Curd (Yogurt)",
+    price: "₹50 / kg",
+    image: "https://media.istockphoto.com/id/1214850940/photo/yogurt-is-good-for-health-with-black-background.jpg?s=612x612&w=0&k=20&c=8GqPjqx9ykwamtCXQE_lOfsQRTQE89RxzBz2kcndXEg=",
+    description: "Fresh homemade curd, rich in probiotics and flavor.",
+  },
+  {
+    name: "Cheese",
+    price: "₹400 / kg",
+    image: "https://images.unsplash.com/photo-1683314573422-649a3c6ad784?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y2hlZXNlfGVufDB8fDB8fHww",
+    description: "Delicious processed cheese slices, great for sandwiches.",
+  },
+  {
+    name: "Ghee",
+    price: "₹600 / kg",
+    image: "https://static.vecteezy.com/system/resources/previews/015/933/280/non_2x/pure-tup-or-desi-ghee-also-known-as-clarified-liquid-butter-free-photo.jpg",
+    description: "Pure clarified butter, ideal for traditional cooking.",
+  },
+  {
+    name: "Flavored Milk",
+    price: "₹70 / liter",
+    image: "https://static.vecteezy.com/system/resources/previews/065/867/131/non_2x/healthy-protein-shake-with-frothy-texture-served-in-glass-photo.jpeg",
+    description: "Tasty flavored milk in chocolate and strawberry variants.",
+  },
+  {
+    name: "Milk Powder",
+    price: "₹350 / kg",
+    image: "https://www.shutterstock.com/image-photo/powdered-milk-portion-granulated-powder-600nw-2411414141.jpg",
+    description: "Instant milk powder for easy use and long shelf life.",
+  },
 ];
 
 export default function Page() {
@@ -241,31 +287,34 @@ export default function Page() {
   const [quantities, setQuantities] = useState<{ [key: number]: number }>({});
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
- const scroll = (dir: "left" | "right") => {
-  if (!scrollRef.current) return;
+  // New state to handle the details page active product index for slideshow
+  const [activeDetailIndex, setActiveDetailIndex] = useState(0);
+  // To pause the slideshow when user clicks Add button
+  const [isPaused, setIsPaused] = useState(false);
 
-  const container = scrollRef.current;
-  const maxScrollLeft = container.scrollWidth - container.clientWidth;
-  const currentScroll = container.scrollLeft;
-  const scrollAmount = 240;
+  // Scroll logic (unchanged)
+  const scroll = (dir: "left" | "right") => {
+    if (!scrollRef.current) return;
 
-  if (dir === "left") {
-    if (currentScroll <= 0) {
-      // If at the start, go to the end
-      container.scrollTo({ left: maxScrollLeft, behavior: "smooth" });
+    const container = scrollRef.current;
+    const maxScrollLeft = container.scrollWidth - container.clientWidth;
+    const currentScroll = container.scrollLeft;
+    const scrollAmount = 240;
+
+    if (dir === "left") {
+      if (currentScroll <= 0) {
+        container.scrollTo({ left: maxScrollLeft, behavior: "smooth" });
+      } else {
+        container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+      }
     } else {
-      container.scrollBy({ left: -scrollAmount, behavior: "smooth" });
+      if (currentScroll >= maxScrollLeft) {
+        container.scrollTo({ left: 0, behavior: "smooth" });
+      } else {
+        container.scrollBy({ left: scrollAmount, behavior: "smooth" });
+      }
     }
-  } else {
-    if (currentScroll >= maxScrollLeft) {
-      // If at the end, go back to start
-      container.scrollTo({ left: 0, behavior: "smooth" });
-    } else {
-      container.scrollBy({ left: scrollAmount, behavior: "smooth" });
-    }
-  }
-};
-
+  };
 
   const increaseQty = (idx: number) => {
     setQuantities((prev) => {
@@ -291,44 +340,66 @@ export default function Page() {
   const handleAddClick = (idx: number) => {
     setActiveIndex(idx);
     setQuantities((prev) => ({ ...prev, [idx]: 1 }));
+    setActiveDetailIndex(idx); // Show this product's details only
+    setIsPaused(true); // Pause the slideshow
   };
+
+  // When mouse leaves product card, resume slideshow
+  const handleMouseLeaveFromProduct = () => {
+    setActiveIndex(null);
+    setIsPaused(false);
+  };
+
+  // Slideshow effect: move activeDetailIndex every 1 second if not paused
+  useEffect(() => {
+    if (isPaused) return; // pause slideshow
+
+    const interval = setInterval(() => {
+      setActiveDetailIndex((prev) => (prev + 1) % products.length);
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [isPaused]);
+
+  const activeProduct = products[activeDetailIndex];
 
   return (
     <div className="w-full px-4 py-6">
       <div
-  className="relative bg-green-100/70 rounded-xl py-7  overflow-hidden "
-  style={{ paddingLeft: '30px', paddingRight: '50px' }}
->
-
+        className="relative bg-green-100/70 rounded-xl py-7 pr-18 pl-14 overflow-hidden "
+        // style={{ paddingLeft: "40px", paddingRight: "38px" }}
+      >
         {/* Scroll Left */}
-        <button
-          onClick={() => scroll("left")}
-          className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-blue-600 text-white text-2xl px-3 py-1 rounded hover:bg-blue-700 shadow"
-        >
-          {'‹'}
-        </button>
+   {/* Scroll buttons */}
+  <button
+    onClick={() => scroll("left")}
+    className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-blue-600 text-white text-2xl px-3 py-1 rounded hover:bg-blue-700 shadow"
+  >
+    {"‹"}
+  </button>
 
         {/* Products Row */}
-<div
+       <div
   ref={scrollRef}
-  className="flex gap-4.5 overflow-x-auto scroll-smooth no-scrollbar"
-  style={{ marginLeft: '45px', marginRight: '20px' }}
+  className="flex overflow-x-auto scroll-smooth no-scrollbar ml-9"
+  style={{ marginLeft: "38px", marginRight: "20px", gap: "10px" }}
 >
           {products.map((product, idx) => (
             <div
               key={idx}
-              onMouseLeave={() => setActiveIndex(null)}
-              className="w-[220px] flex-shrink-0 bg-white rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.25)] p-4 mt-2 mb-4 transform transition-transform hover:scale-105"
+              onMouseLeave={handleMouseLeaveFromProduct}
+             className="w-[220px] flex-shrink-0 bg-white rounded-xl shadow-[0_4px_10px_rgba(0,0,0,0.25)] p-4 my-4 mx-2 transform transition-transform hover:scale-105"
             >
               <img
                 src={product.image}
                 alt={product.name}
                 className="h-36 w-full object-cover rounded"
               />
-              <h2 className="text-base font-semibold mt-2 text-center">{product.name}</h2>
+              <h2 className="text-base font-semibold mt-2 text-center">
+                {product.name}
+              </h2>
               <p className="text-green-600 font-bold text-center">{product.price}</p>
               <p className="text-sm text-gray-500 text-center">{product.description}</p>
-
 
               {activeIndex === idx ? (
                 <div className="mt-3 flex flex-col gap-2">
@@ -352,8 +423,12 @@ export default function Page() {
                       +
                     </button>
                   </div>
-                  <a href="#" className="bg-orange-500 hover:bg-orange-600 text-white rounded py-1 block text-center"> Buy Now </a>
-
+                  <a
+                    href="#"
+                    className="bg-orange-500 hover:bg-orange-600 text-white rounded py-1 block text-center"
+                  >
+                    Buy Now
+                  </a>
                 </div>
               ) : (
                 <button
@@ -368,13 +443,32 @@ export default function Page() {
         </div>
 
         {/* Scroll Right */}
-        <button
-          onClick={() => scroll("right")}
-          className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-blue-600 text-white text-2xl px-3 py-1 rounded hover:bg-blue-700 shadow"
-        >
-          {'›'}
-        </button>
+      <button
+    onClick={() => scroll("right")}
+    className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-blue-600 text-white text-2xl px-3 py-1 rounded hover:bg-blue-700 shadow"
+  >
+    {"›"}
+  </button>
       </div>
+{/* Product Details Section */}
+<div className="mt-8 bg-white rounded-xl shadow-lg p-6 flex flex-col md:flex-row gap-6 max-w-full">
+  <img
+    src={activeProduct.image}
+    alt={activeProduct.name}
+    className="rounded object-cover"
+    style={{ width: '612px', height: '408px' }}
+  />
+  <div className="flex flex-col justify-center gap-4 md:flex-1">
+    <h2 className="text-2xl font-bold">{activeProduct.name}</h2>
+    <p className="text-xl text-green-600 font-semibold">{activeProduct.price}</p>
+    <p className="text-gray-700">{activeProduct.description}</p>
+    <p className="text-gray-600 italic">
+      Why it's healthy: Fresh, organic, nutrient-rich, and carefully harvested for best quality.
+    </p>
+  </div>
+</div>
+
+
     </div>
   );
 }
